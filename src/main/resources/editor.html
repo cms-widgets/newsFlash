@@ -1,0 +1,13 @@
+<!--编辑视图-->
+<div xmlns:th="http://www.thymeleaf.org">
+    <table>
+        <tr th:each="news : ${newsList}">
+            <td><input type="checkbox" class="news-check" /></td>
+            <td th:text="${news.title}" class="news-title">title</td>
+            <td th:text="${news.publishDate}" class="news-publishDate">publishDate</td>
+        </tr>
+    </table>
+</div>
+<!--/编辑视图-->
+
+
