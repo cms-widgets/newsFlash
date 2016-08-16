@@ -2,11 +2,16 @@
 <div xmlns:th="http://www.thymeleaf.org">
     <div class="newFlash-pane">
         <p> <span>快讯News</span> <a href="#">查看更多>></a></p>
-        <p th:each="news:${newsList}" class="news-link">
-            <a href="">
-                <span th:text="${news.title}">title</span>..........................
-                <span th:text="${news.publishDate}">2016-08-15</span>
-            </a>
+        <div>
+            <p th:each="news:${newsList}" class="news-link">
+                <a href="#">
+                    <span th:text="${news.title}">title</span>..........................
+                    <span th:text="${news.publishDate}">2016-08-15</span>
+                </a>
+            </p>
+        </div>
+
+        <p style="clear:both">
         </p>
     </div>
 </div>
