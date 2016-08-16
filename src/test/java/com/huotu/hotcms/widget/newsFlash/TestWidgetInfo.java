@@ -17,8 +17,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -28,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author CJ
  */
 public class TestWidgetInfo extends WidgetTest {
+
+    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected boolean printPageSource() {
@@ -43,7 +45,15 @@ public class TestWidgetInfo extends WidgetTest {
 
     @Override
     protected void browseWork(Widget widget, WidgetStyle style, Function<ComponentProperties, WebElement> uiChanger) throws IOException {
-        ComponentProperties properties = widget.defaultProperties(resourceService);
+        ComponentProperties properties = new ComponentProperties();
+        List<Map<String, Object>> mockNewsList = new ArrayList<>();
+        for (int i = 0; i < WidgetInfo.NEWS_FLASH_LIST_SIZE; i++) {
+            Map<String, Object> news = new HashMap<>();
+            news.put("title", UUID.randomUUID().toString());
+            news.put("publishDate", SIMPLE_DATE_FORMAT.format(new Date()));
+            mockNewsList.add(news);
+        }
+        properties.put("newsList", mockNewsList);
         WebElement webElement = uiChanger.apply(properties);
         List<WebElement> browseNewsLs = webElement.findElements(By.cssSelector(".news-link"));
         assertThat(browseNewsLs.size()).isEqualTo(WidgetInfo.NEWS_FLASH_LIST_SIZE);
@@ -54,6 +64,11 @@ public class TestWidgetInfo extends WidgetTest {
     protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function, Supplier<Map<String, Object>> supplier) throws IOException {
         WebElement webElement = function.apply(widget.defaultProperties(resourceService));
         List<WebElement> news = webElement.findElements(By.tagName("tr"));
+        System.out.println("\n************************");
+        news.forEach(n -> {
+            System.out.println(n.getText());
+        });
+        System.out.println("\n************************");
         assertThat(news.size()).isEqualTo(WidgetInfo.NEWS_FLASH_LIST_SIZE);
 
         List<WebElement> checkboxs = webElement.findElements(By.className("news-check"));

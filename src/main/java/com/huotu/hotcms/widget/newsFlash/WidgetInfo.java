@@ -110,7 +110,7 @@ public class WidgetInfo implements Widget {
             news.put("publishDate", SIMPLE_DATE_FORMAT.format(new Date()));
             mockNewsList.add(news);
         }
-        properties.put("newsList", mockNewsList);
+        properties.put(NEWS_FLASH_LIST, mockNewsList);
         return properties;
     }
 
