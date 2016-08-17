@@ -3,7 +3,7 @@
     <div class="newFlash-pane">
         <p> <span>快讯News</span> <a href="#">查看更多>></a></p>
         <div>
-            <p th:each="news:${newsList}" class="news-link">
+            <p th:each="news:${newsFlashList}" class="news-link">
                 <a href="#">
                     <span th:text="${news.title}">title</span>..........................
                     <span th:text="${news.publishDate}">2016-08-15</span>

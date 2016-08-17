@@ -31,6 +31,11 @@ public class WidgetInfo implements Widget {
      */
     public static final String VALID_STYLE_TEMPLATE = "styleTemplate";
 
+    public static final String VALID_TITLE = "title";
+
+    public static final String VALID_PUBLISHDATE = "publishDate";
+
+
     public static final String NEWS_FLASH_LIST = "newsFlashList";
 
     public static final int NEWS_FLASH_LIST_SIZE = 10;
@@ -106,8 +111,8 @@ public class WidgetInfo implements Widget {
         List<Map<String, Object>> mockNewsList = new ArrayList<>();
         for (int i = 0; i < NEWS_FLASH_LIST_SIZE; i++) {
             Map<String, Object> news = new HashMap<>();
-            news.put("title", UUID.randomUUID().toString());
-            news.put("publishDate", SIMPLE_DATE_FORMAT.format(new Date()));
+            news.put(VALID_TITLE, UUID.randomUUID().toString());
+            news.put(VALID_PUBLISHDATE, SIMPLE_DATE_FORMAT.format(new Date()));
             mockNewsList.add(news);
         }
         properties.put(NEWS_FLASH_LIST, mockNewsList);

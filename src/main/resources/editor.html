@@ -1,12 +1,30 @@
 <!--编辑视图-->
-<div xmlns:th="http://www.thymeleaf.org">
-    <table>
-        <tr th:each="news : ${newsFlashList}">
-            <td><input type="checkbox" class="news-check" /></td>
-            <td th:text="${news.title}" class="news-title">title</td>
-            <td th:text="${news.publishDate}" class="news-publishDate">publishDate</td>
+<div>
+    <div class="dataSource-pane">
+        <select class="dataSource">
+            <option value=""></option>
+        </select>
+    </div>
+
+    <table class="dataList">
+        <thead>
+        <tr>
+            <th>选择</th>
+            <th>快讯标题</th>
+            <th>发布时间</th>
         </tr>
+        </thead>
     </table>
+
+    <script type="text/template" class="item">
+        <table>
+            <tr class="news-link">
+                <td><input type="checkbox" class="news-check"/></td>
+                <td class="news-title">title</td>
+                <td class="news-publishDate">publishDate</td>
+            </tr>
+        </table>
+    </script>
 </div>
 <!--/编辑视图-->
 
