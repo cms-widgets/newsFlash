@@ -38,7 +38,7 @@ public class TestWidgetInfo extends WidgetTest {
 
     @Override
     protected void editorWork(Widget widget, WebElement editor, Supplier<Map<String, Object>> currentWidgetProperties) {
-        Map<String,Object> properties = currentWidgetProperties.get();
+        Map<String, Object> properties = currentWidgetProperties.get();
         List<Map<String, Object>> newsList = (List<Map<String, Object>>) properties.get(WidgetInfo.NEWS_FLASH_LIST);
         assertThat(newsList.size()).isEqualTo(WidgetInfo.NEWS_FLASH_LIST_SIZE);
     }
@@ -64,22 +64,17 @@ public class TestWidgetInfo extends WidgetTest {
     protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function, Supplier<Map<String, Object>> supplier) throws IOException {
         WebElement webElement = function.apply(widget.defaultProperties(resourceService));
         List<WebElement> news = webElement.findElements(By.tagName("tr"));
-        System.out.println("\n************************");
-        news.forEach(n -> {
-            System.out.println(n.getText());
-        });
-        System.out.println("\n************************");
         assertThat(news.size()).isEqualTo(WidgetInfo.NEWS_FLASH_LIST_SIZE);
 
         List<WebElement> checkboxs = webElement.findElements(By.className("news-check"));
-        for(int i=0;i<checkboxs.size();i++){
-            if(i%2==0){
+        for (int i = 0; i < checkboxs.size(); i++) {
+            if (i % 2 == 0) {
                 checkboxs.get(i).click();
             }
         }
 
-        for(int i=0;i<checkboxs.size();i++){
-            if(i%2==0){
+        for (int i = 0; i < checkboxs.size(); i++) {
+            if (i % 2 == 0) {
                 assertThat(checkboxs.get(i).getAttribute("checked")).isEqualTo("true");
             }
         }
