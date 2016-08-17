@@ -78,25 +78,25 @@ CMSWidgets.initWidget({
         open: function (globalId) {
             this.properties = widgetProperties(globalId);
             /*<![CDATA[*/
-            //var dataList = /*[[${@cmsDataSourceService.findLinkCategory()}]]*/ '[]';
-
-            /*]]>*/
-
-            var newsTypeList = [];
-            for (var i = 0; i < 10; i++) {
-                var name = "name" + Math.random();
-                var obj = {};
-                obj.name = name;
-                obj.serial = Math.random();
-                newsTypeList.push(obj);
-            }
-
-            //name,serial
+            var newsTypeList = /*[[${@cmsDataSourceService.findLinkCategory()}]]*/ '[]';
             var optionHtml = "";
             for (var i = 0; i < newsTypeList.length; i++) {
                 optionHtml += "<option value='" + newsTypeList[i].serial + "'>" + newsTypeList[i].name + "</option>";
             }
             $(".dataSource").append(optionHtml);
+            /*]]>*/
+
+            //var newsTypeList = [];
+            //for (var i = 0; i < 10; i++) {
+            //    var name = "name" + Math.random();
+            //    var obj = {};
+            //    obj.name = name;
+            //    obj.serial = Math.random();
+            //    newsTypeList.push(obj);
+            //}
+
+            //name,serial
+
 
             this.selectChange();
 
