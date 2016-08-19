@@ -96,8 +96,7 @@ public class TestWidgetInfo extends WidgetTest {
     }
 
     @Override
-    protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function)
-            throws IOException {
+    protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function, Supplier<Map<String, Object>> supplier) throws IOException {
         WebElement webElement = function.apply(widget.defaultProperties(resourceService));
 
         List<WebElement> checkboxs = webElement.findElements(By.className("news-check"));
@@ -112,6 +111,5 @@ public class TestWidgetInfo extends WidgetTest {
             }
         }
     }
-
 
 }
