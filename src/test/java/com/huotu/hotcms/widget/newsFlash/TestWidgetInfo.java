@@ -40,38 +40,32 @@ public class TestWidgetInfo extends WidgetTest {
     protected void editorWork(Widget widget, WebElement editor, Supplier<Map<String, Object>> currentWidgetProperties) {
         List<WebElement> options = editor.findElements(By.tagName("option"));
         assertThat(options.size()).isGreaterThanOrEqualTo(1);
-
         options.get(new Random().nextInt(options.size())).click();// 触发多次change事件
         options.get(new Random().nextInt(options.size())).click();
         options.get(new Random().nextInt(options.size())).click();
         options.get(new Random().nextInt(options.size())).click();
-
         List<WebElement> dataList = editor.findElements(By.tagName("tr"));
         assertThat(dataList.size()).isGreaterThanOrEqualTo(1);
-
         List<WebElement> checkboxs = editor.findElements(By.className("news-check"));
         for (int i = 0; i < checkboxs.size(); i++) {
             if (i % 2 == 0) {
                 checkboxs.get(i).click();
             }
         }
-
         for (int i = 0; i < checkboxs.size(); i++) {
             if (i % 2 == 0) {
                 assertThat(checkboxs.get(i).getAttribute("checked")).isEqualTo("true");
             }
         }
-
         Map<String, Object> map = currentWidgetProperties.get();
         List<Map<String, Object>> newsList = (List<Map<String, Object>>) map.get(WidgetInfo.NEWS_FLASH_LIST);
-
         List<WebElement> newsTitleElems = editor.findElements(By.className("news-title"));
         List<WebElement> newsPublishDate = editor.findElements(By.className("news-publishDate"));
         for (int i = 0; i < newsList.size(); i++) {
             if (i % 2 == 0) {
                 Map<String, Object> news = newsList.get(i);
                 assertThat(news.get(WidgetInfo.VALID_TITLE).toString()).isEqualTo(newsTitleElems.get(i).getText());
-                assertThat(news.get(WidgetInfo.VALID_PUBLISHDATE).toString()).isEqualTo(newsPublishDate.get(i).getText());
+                assertThat(news.get(WidgetInfo.VALID_CREATE_TIME).toString()).isEqualTo(newsPublishDate.get(i).getText());
             }
         }
 
@@ -85,7 +79,7 @@ public class TestWidgetInfo extends WidgetTest {
         for (int i = 0; i < WidgetInfo.NEWS_FLASH_LIST_SIZE; i++) {
             Map<String, Object> news = new HashMap<>();
             news.put(WidgetInfo.VALID_TITLE, UUID.randomUUID().toString());
-            news.put(WidgetInfo.VALID_PUBLISHDATE, SIMPLE_DATE_FORMAT.format(new Date()));
+            news.put(WidgetInfo.VALID_CREATE_TIME, SIMPLE_DATE_FORMAT.format(new Date()));
             mockNewsList.add(news);
         }
         properties.put(WidgetInfo.NEWS_FLASH_LIST, mockNewsList);

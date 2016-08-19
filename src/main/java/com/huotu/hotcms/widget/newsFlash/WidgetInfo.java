@@ -19,7 +19,13 @@ import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -33,7 +39,7 @@ public class WidgetInfo implements Widget {
 
     public static final String VALID_TITLE = "title";
 
-    public static final String VALID_PUBLISHDATE = "publishDate";
+    public static final String VALID_CREATE_TIME = "createTime";
 
 
     public static final String NEWS_FLASH_LIST = "newsFlashList";
@@ -112,7 +118,7 @@ public class WidgetInfo implements Widget {
         for (int i = 0; i < NEWS_FLASH_LIST_SIZE; i++) {
             Map<String, Object> news = new HashMap<>();
             news.put(VALID_TITLE, UUID.randomUUID().toString());
-            news.put(VALID_PUBLISHDATE, SIMPLE_DATE_FORMAT.format(new Date()));
+            news.put(VALID_CREATE_TIME, SIMPLE_DATE_FORMAT.format(new Date()));
             mockNewsList.add(news);
         }
         properties.put(NEWS_FLASH_LIST, mockNewsList);

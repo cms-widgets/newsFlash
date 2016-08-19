@@ -12,9 +12,9 @@ CMSWidgets.initWidget({
                 if ($(this).is(":checked")) {
                     var news = {};
                     var title = $(".news-title").eq(i).text();
-                    var publishDate = $(".news-publishDate").eq(i).text();
+                    var createTime = $(".news-publishDate").eq(i).text();
                     news.title = title;
-                    news.publishDate = publishDate;
+                    news.createTime = createTime;
                     me.properties.newsFlashList.push(news);
                 }
             });
@@ -22,43 +22,34 @@ CMSWidgets.initWidget({
             return me.properties;
         },
         selectChange: function () {
-
-
             $(".dataSource").on("change", function () {
-
                 var serial = $("option:selected").val();
                 $(".news-link").remove();
-
-
-                getDataSource("findLinkContent", serial, function (data) {
-
+                getDataSource("findArticleContent", serial, function (data) {
                     for (var i = 0; i < data.length; i++) {
                         var title = data[i].title;
-                        var publishDate = data[i].publishDate;
+                        var createTime = data[i].createTime;
                         var $tr = $($(".item").html()).find("tr");
                         $tr.find(".news-title").text(title);
-                        $tr.find(".news-publishDate").text(publishDate);
+                        $tr.find(".news-publishDate").text(createTime);
                         $(".dataList").append($tr);
                     }
                 }, function () {
-
+                    console.error("getDataSource error")
                 });
             });
-
         },
         open: function (globalId) {
             this.properties = widgetProperties(globalId);
             /*<![CDATA[*/
-            var newsTypeList = /*[[${@cmsDataSourceService.findLinkCategory()}]]*/ '[]';
+            var newsTypeList = /*[[${@cmsDataSourceService.findArticleCategory()}]]*/ '[]';
             var optionHtml = "";
             for (var i = 0; i < newsTypeList.length; i++) {
                 optionHtml += "<option value='" + newsTypeList[i].serial + "'>" + newsTypeList[i].name + "</option>";
             }
             $(".dataSource").append(optionHtml);
             /*]]>*/
-
             this.selectChange();
-
         },
         close: function (globalId) {
 

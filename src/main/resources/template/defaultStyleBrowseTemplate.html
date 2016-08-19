@@ -6,11 +6,10 @@
             <p th:each="news:${newsFlashList}" class="news-link">
                 <a href="#">
                     <span th:text="${news.title}">title</span>..........................
-                    <span th:text="${news.publishDate}">2016-08-15</span>
+                    <span th:text="${news.createTime}">2016-08-15</span>
                 </a>
             </p>
         </div>
-
         <p style="clear:both">
         </p>
     </div>
