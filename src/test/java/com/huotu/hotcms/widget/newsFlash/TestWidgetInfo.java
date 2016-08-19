@@ -92,7 +92,6 @@ public class TestWidgetInfo extends WidgetTest {
     @Override
     protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function, Supplier<Map<String, Object>> supplier) throws IOException {
         WebElement webElement = function.apply(widget.defaultProperties(resourceService));
-
         List<WebElement> checkboxs = webElement.findElements(By.className("news-check"));
         for (int i = 0; i < checkboxs.size(); i++) {
             if (i % 2 == 0) {
@@ -101,7 +100,7 @@ public class TestWidgetInfo extends WidgetTest {
         }
         for (int i = 0; i < checkboxs.size(); i++) {
             if (i % 2 == 0) {
-                assertThat(checkboxs.get(i).getAttribute("checked")).isEqualTo("true");
+                assertThat(checkboxs.get(i).isSelected()).isFalse();
             }
         }
     }

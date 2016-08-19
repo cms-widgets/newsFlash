@@ -37,6 +37,7 @@ public class WidgetInfo implements Widget {
      */
     public static final String VALID_STYLE_TEMPLATE = "styleTemplate";
 
+    public static final String VALID_ID = "id";
     public static final String VALID_TITLE = "title";
 
     public static final String VALID_CREATE_TIME = "createTime";
@@ -119,6 +120,7 @@ public class WidgetInfo implements Widget {
             Map<String, Object> news = new HashMap<>();
             news.put(VALID_TITLE, UUID.randomUUID().toString());
             news.put(VALID_CREATE_TIME, SIMPLE_DATE_FORMAT.format(new Date()));
+            news.put(VALID_ID,i);
             mockNewsList.add(news);
         }
         properties.put(NEWS_FLASH_LIST, mockNewsList);

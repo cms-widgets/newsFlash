@@ -14,10 +14,10 @@
             <th>发布时间</th>
         </tr>
         </thead>
-        <tr class="news-link" th:if="">
-            <td><input type="checkbox" class="news-check"/></td>
-            <td class="news-title">title</td>
-            <td class="news-publishDate">publishDate</td>
+        <tr class="news-link" th:each="item :${newsFlashList}">
+            <td><input type="checkbox" class="news-check" th:value="${item.id}" checked="checked"/></td>
+            <td class="news-title" th:text="${item.title}">title</td>
+            <td class="news-publishDate" th:text="${item.createTime}">publishDate</td>
         </tr>
     </table>
 

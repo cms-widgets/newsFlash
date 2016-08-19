@@ -8,16 +8,21 @@ CMSWidgets.initWidget({
         saveComponent: function (onSuccess, onFailed) {
             var me = this;
             me.properties.newsFlashList = [];
-            $(".news-check").each(function (i) {
-                if ($(this).is(":checked")) {
+            $(".news-link").each(function (i) {
+                if ($(this).find(":checkbox").is(":checked")) {
+                    var title = $(this).find(".news-title").text();
+                    var createTime = $(this).find(".news-publishDate").text();
+                    var id = $(this).find(".news-check").val();
                     var news = {};
-                    var title = $(".news-title").eq(i).text();
-                    var createTime = $(".news-publishDate").eq(i).text();
                     news.title = title;
                     news.createTime = createTime;
+                    news.id = id;
                     me.properties.newsFlashList.push(news);
                 }
             });
+            if (!me.properties.newsFlashList.length>0){
+                onFailed("数据列表为空，请选择快讯");
+            }
             onSuccess(me.properties);
             return me.properties;
         },
@@ -29,7 +34,9 @@ CMSWidgets.initWidget({
                     for (var i = 0; i < data.length; i++) {
                         var title = data[i].title;
                         var createTime = data[i].createTime;
+                        var id = data[i].id;
                         var $tr = $($(".item").html()).find("tr");
+                        $tr.find(".news-check").val(id);
                         $tr.find(".news-title").text(title);
                         $tr.find(".news-publishDate").text(createTime);
                         $(".dataList").append($tr);
