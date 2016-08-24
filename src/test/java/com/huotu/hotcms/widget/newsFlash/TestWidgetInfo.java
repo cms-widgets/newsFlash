@@ -9,9 +9,13 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
+import com.huotu.hotcms.service.entity.Category;
+import com.huotu.hotcms.service.model.BaseModel;
+import com.huotu.hotcms.widget.CMSContext;
 import com.huotu.hotcms.widget.ComponentProperties;
 import com.huotu.hotcms.widget.Widget;
 import com.huotu.hotcms.widget.WidgetStyle;
+import com.huotu.hotcms.widget.service.CMSDataSourceService;
 import com.huotu.widget.test.WidgetTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -46,6 +50,7 @@ public class TestWidgetInfo extends WidgetTest {
         Map map = currentWidgetProperties.get();
         assertThat(map.get(WidgetInfo.COUNT)).isEqualTo("20");
 
+
     }
 
     @Override
@@ -53,13 +58,32 @@ public class TestWidgetInfo extends WidgetTest {
             throws IOException {
         ComponentProperties properties = widget.defaultProperties(resourceService);
         WebElement webElement = uiChanger.apply(properties);
-
+        List<WebElement> lis = webElement.findElements(By.tagName("li"));
+        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CMSDataSourceService.class);
+        List<BaseModel> articleContent = cmsDataSourceService.findArticleContent(properties.get(WidgetInfo.SERIAL).toString()
+                , Integer.valueOf(properties.get(WidgetInfo.COUNT).toString()));
+        if (articleContent==null)
+            assertThat(lis).isNull();
+        else
+            assertThat(articleContent.size()).isEqualTo(lis.size());
     }
 
     @Override
     protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function, Supplier<Map<String, Object>> supplier) throws IOException {
         ComponentProperties properties = widget.defaultProperties(resourceService);
         WebElement webElement = function.apply(properties);
+        WebElement count = webElement.findElement(By.name(WidgetInfo.COUNT));
+        assertThat(count.getAttribute("value")).isEqualTo(properties.get(WidgetInfo.COUNT).toString());
+
+        List<WebElement> options = webElement.findElements(By.tagName("option"));
+        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CMSDataSourceService.class);
+        List<Category> list = cmsDataSourceService.findArticleCategory();
+        if (list==null)
+            assertThat(options).isNull();
+        else
+            assertThat(options.size()).isEqualTo(options.size());
     }
 
 }
