@@ -1,17 +1,18 @@
 <!--预览视图-->
 <div xmlns:th="http://www.thymeleaf.org">
+    <!--/*@thymesVar id="serial" type="java.lang.String"*/-->
+    <!--/*@thymesVar id="count" type="java.lang.Number"*/-->
+    <!--/*@thymesVar id="pagePath" type="java.lang.String"*/-->
     <div class="newFlash-pane">
         <p> <span>快讯News</span> <a href="#">查看更多>></a></p>
-        <div>
-            <p th:each="news:${newsFlashList}" class="news-link">
-                <a href="#">
-                    <span th:text="${news.title}">title</span>..........................
-                    <span th:text="${news.createTime}">2016-08-15</span>
+        <url>
+            <li th:each="content:${@cmsDataSourceService.findArticleContent(serial,count)}">
+                <a href="defaultStyleBrowseTemplate.html" th:href="@{/{path}/{id}(path=${pagePath},id=${content.id})}">
+                    <span th:text="${content.title}">name</span>
+                    <span th:text="${content.createTime}"></span>
                 </a>
-            </p>
-        </div>
-        <p style="clear:both">
-        </p>
+            </li>
+        </url>
     </div>
 </div>
 <!--/预览视图-->

@@ -1,35 +1,19 @@
 <!--编辑视图-->
-<div>
-    <div class="dataSource-pane">
-        <select class="dataSource">
-            <option value=""></option>
-        </select>
-    </div>
+<div class="borderBoxs" xmlns:th="http://www.thymeleaf.org">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="mr6">文章数据源：</label>
+            <select class="form-control mr6 category" name="categoryId">
+                <option th:each="category:${@cmsDataSourceService.findArticleCategory()}" th:value="${category.serial}" th:text="${category.name}">
 
-    <table class="dataList">
-        <thead>
-        <tr>
-            <th>选择</th>
-            <th>快讯标题</th>
-            <th>发布时间</th>
-        </tr>
-        </thead>
-        <tr class="news-link" th:each="item :${newsFlashList}">
-            <td><input type="checkbox" class="news-check" th:value="${item.id}" checked="checked"/></td>
-            <td class="news-title" th:text="${item.title}">title</td>
-            <td class="news-publishDate" th:text="${item.createTime}">publishDate</td>
-        </tr>
-    </table>
-
-    <script type="text/template" class="item">
-        <table>
-            <tr class="news-link">
-                <td><input type="checkbox" class="news-check"/></td>
-                <td class="news-title">title</td>
-                <td class="news-publishDate">publishDate</td>
-            </tr>
-        </table>
-    </script>
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="mr6">展示条数：</label>
+            <input class="form-control count" type="number" name="count" th:value="${count}" />
+        </div>
+    </form>
 </div>
 <!--/编辑视图-->
 

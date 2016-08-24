@@ -9,45 +9,39 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
+import com.huotu.hotcms.widget.CMSContext;
 import com.huotu.hotcms.widget.ComponentProperties;
+import com.huotu.hotcms.widget.PreProcessWidget;
 import com.huotu.hotcms.widget.Widget;
 import com.huotu.hotcms.widget.WidgetStyle;
+import com.huotu.hotcms.widget.entity.PageInfo;
+import com.huotu.hotcms.widget.repository.PageInfoRepository;
+import com.huotu.hotcms.widget.service.CMSDataSourceService;
 import me.jiangcai.lib.resource.service.ResourceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 
 
 /**
  * @author CJ
  */
-public class WidgetInfo implements Widget {
-    /*
-     * 指定风格的模板类型 如：html,text等
-     */
-    public static final String VALID_STYLE_TEMPLATE = "styleTemplate";
+public class WidgetInfo implements Widget, PreProcessWidget {
 
-    public static final String VALID_ID = "id";
-    public static final String VALID_TITLE = "title";
+    public static final String SERIAL = "serial";
 
-    public static final String VALID_CREATE_TIME = "createTime";
-
-
-    public static final String NEWS_FLASH_LIST = "newsFlashList";
+    public static final String COUNT = "count";
 
     public static final int NEWS_FLASH_LIST_SIZE = 10;
 
-    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    @Autowired
+    CMSDataSourceService cmsDataSourceService;
 
     @Override
     public String groupId() {
@@ -115,16 +109,20 @@ public class WidgetInfo implements Widget {
     @Override
     public ComponentProperties defaultProperties(ResourceService resourceService) throws IOException {
         ComponentProperties properties = new ComponentProperties();
-        List<Map<String, Object>> mockNewsList = new ArrayList<>();
-        for (int i = 0; i < NEWS_FLASH_LIST_SIZE; i++) {
-            Map<String, Object> news = new HashMap<>();
-            news.put(VALID_TITLE, UUID.randomUUID().toString());
-            news.put(VALID_CREATE_TIME, SIMPLE_DATE_FORMAT.format(new Date()));
-            news.put(VALID_ID,i);
-            mockNewsList.add(news);
-        }
-        properties.put(NEWS_FLASH_LIST, mockNewsList);
+        properties.put(COUNT, NEWS_FLASH_LIST_SIZE);
+        properties.put(SERIAL, "0");
         return properties;
     }
 
+    @Override
+    public void prepareContext(WidgetStyle style, ComponentProperties properties, Map<String, Object> variables) {
+        PageInfoRepository pageInfoRepository = CMSContext.RequestContext().getWebApplicationContext().getBean(PageInfoRepository.class);
+        if(properties.containsKey("pageSerial")){
+            String serial = properties.get("pageSerial").toString();
+            PageInfo pageInfo = pageInfoRepository.findBySerial(serial);
+            if (pageInfo != null) {
+                variables.put("pagePath",pageInfo.getPagePath());
+            }
+        }
+    }
 }
