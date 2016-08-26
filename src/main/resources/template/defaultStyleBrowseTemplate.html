@@ -3,16 +3,16 @@
     <!--/*@thymesVar id="serial" type="java.lang.String"*/-->
     <!--/*@thymesVar id="count" type="java.lang.Number"*/-->
     <!--/*@thymesVar id="pagePath" type="java.lang.String"*/-->
-    <div class="newFlash-pane">
-        <p> <span>快讯News</span> <a href="#">查看更多>></a></p>
-        <url>
+    <div class="newFlash-pane newFlash-pane-red">
+        <p><span class="newFlash-pane-head">快讯News</span><a href="#" class="pull-right">查看更多>></a></p>
+        <ul class="list-unstyled newFlash-pane-list">
             <li th:each="content:${@cmsDataSourceService.findArticleContent(serial,count)}">
-                <a href="defaultStyleBrowseTemplate.html" th:href="@{/{path}/{id}(path=${pagePath},id=${content.id})}">
-                    <span th:text="${content.title}">name</span>
-                    <span th:text="${content.createTime}"></span>
+                <a class="clearfix" href="defaultStyleBrowseTemplate.html" th:href="@{/{path}/{id}(path=${pagePath},id=${content.id})}">
+                    <span class="newsFlash-list-title" th:text="${content.title}">name</span>
+                    <span class="newsFlash-list-time" th:text="${content.createTime}"></span>
                 </a>
             </li>
-        </url>
+        </ul>
     </div>
 </div>
 <!--/预览视图-->
