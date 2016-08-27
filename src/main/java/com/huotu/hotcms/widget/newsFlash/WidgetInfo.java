@@ -9,22 +9,28 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
+import com.huotu.hotcms.service.entity.Article;
+import com.huotu.hotcms.service.entity.Category;
+import com.huotu.hotcms.service.exception.PageNotFoundException;
+import com.huotu.hotcms.service.repository.CategoryRepository;
 import com.huotu.hotcms.widget.CMSContext;
 import com.huotu.hotcms.widget.ComponentProperties;
 import com.huotu.hotcms.widget.PreProcessWidget;
 import com.huotu.hotcms.widget.Widget;
 import com.huotu.hotcms.widget.WidgetStyle;
 import com.huotu.hotcms.widget.entity.PageInfo;
-import com.huotu.hotcms.widget.repository.PageInfoRepository;
 import com.huotu.hotcms.widget.service.CMSDataSourceService;
+import com.huotu.hotcms.widget.service.PageService;
 import me.jiangcai.lib.resource.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -33,10 +39,12 @@ import java.util.Map;
  * @author CJ
  */
 public class WidgetInfo implements Widget, PreProcessWidget {
+    public static final String ContentSerial = "ContentSerial";
 
     public static final String SERIAL = "serial";
 
     public static final String COUNT = "count";
+    public static final String DATA_PAGE = "dataPage";
 
     public static final int NEWS_FLASH_LIST_SIZE = 10;
 
@@ -109,19 +117,45 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     @Override
     public ComponentProperties defaultProperties(ResourceService resourceService) throws IOException {
         ComponentProperties properties = new ComponentProperties();
+        // 随意找一个数据源,如果没有。那就没有。。
+        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CMSDataSourceService.class);
+
+        List<Category> categories = cmsDataSourceService.findArticleCategory();
+        if (categories.isEmpty()) {
+            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
+        }
+        properties.put(SERIAL, categories.get(0).getSerial());
         properties.put(COUNT, NEWS_FLASH_LIST_SIZE);
-        properties.put(SERIAL, "0");
         return properties;
     }
 
     @Override
-    public void prepareContext(WidgetStyle style, ComponentProperties properties, Map<String, Object> variables, Map<String, String> parameters) {
-        PageInfoRepository pageInfoRepository = CMSContext.RequestContext().getWebApplicationContext().getBean(PageInfoRepository.class);
-        if(properties.containsKey("pageSerial")){
-            String serial = properties.get("pageSerial").toString();
-            PageInfo pageInfo = pageInfoRepository.findBySerial(serial);
-            if (pageInfo != null) {
-                variables.put("pagePath",pageInfo.getPagePath());
+    public void prepareContext(WidgetStyle style, ComponentProperties properties, Map<String, Object> variables
+            , Map<String, String> parameters) {
+
+        String serial = (String) properties.get(SERIAL);
+        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CMSDataSourceService.class);
+        Page<Article> page = cmsDataSourceService.findArticleContent(serial,1,NEWS_FLASH_LIST_SIZE);
+        variables.put(DATA_PAGE,page);
+        String contentSerial = (String) properties.get(ContentSerial);
+        if (page != null && !page.getContent().isEmpty()) {
+            if (contentSerial != null) {
+                PageInfo contentPage = cmsDataSourceService.findPageInfoContent(contentSerial);
+                variables.put("contentURI", contentPage.getPagePath());
+            } else {
+                try {
+                    CategoryRepository categoryRepository =  CMSContext.RequestContext().getWebApplicationContext()
+                            .getBean(CategoryRepository.class);
+                    Category category = categoryRepository.findBySerialAndSite(variables.get(SERIAL).toString()
+                            ,CMSContext.RequestContext().getSite());
+                    PageInfo contentPage = CMSContext.RequestContext().getWebApplicationContext().getBean(PageService.class)
+                            .getClosestContentPage(category, (String) variables.get("uri"));
+                    variables.put("contentURI", contentPage.getPagePath());
+                } catch (PageNotFoundException e) {
+                    variables.put("contentURI", variables.get("uri"));
+                }
             }
         }
     }
