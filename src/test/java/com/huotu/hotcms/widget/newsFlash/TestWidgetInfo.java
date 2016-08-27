@@ -9,6 +9,7 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
+import com.huotu.hotcms.service.entity.Article;
 import com.huotu.hotcms.service.entity.Category;
 import com.huotu.hotcms.service.model.BaseModel;
 import com.huotu.hotcms.widget.CMSContext;
@@ -21,6 +22,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.data.domain.Page;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -61,12 +63,12 @@ public class TestWidgetInfo extends WidgetTest {
         List<WebElement> lis = webElement.findElements(By.tagName("li"));
         CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CMSDataSourceService.class);
-        List<BaseModel> articleContent = cmsDataSourceService.findArticleContent(properties.get(WidgetInfo.SERIAL).toString()
-                , Integer.valueOf(properties.get(WidgetInfo.COUNT).toString()));
+        Page<Article> articleContent = cmsDataSourceService.findArticleContent(properties.get(WidgetInfo.SERIAL).toString()
+                ,1, Integer.valueOf(properties.get(WidgetInfo.COUNT).toString()));
         if (articleContent==null)
             assertThat(lis).isNull();
         else
-            assertThat(articleContent.size()).isEqualTo(lis.size());
+            assertThat(articleContent.getContent().size()).isEqualTo(lis.size());
     }
 
     @Override

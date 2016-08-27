@@ -115,7 +115,7 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     }
 
     @Override
-    public void prepareContext(WidgetStyle style, ComponentProperties properties, Map<String, Object> variables) {
+    public void prepareContext(WidgetStyle style, ComponentProperties properties, Map<String, Object> variables, Map<String, String> parameters) {
         PageInfoRepository pageInfoRepository = CMSContext.RequestContext().getWebApplicationContext().getBean(PageInfoRepository.class);
         if(properties.containsKey("pageSerial")){
             String serial = properties.get("pageSerial").toString();
@@ -125,4 +125,6 @@ public class WidgetInfo implements Widget, PreProcessWidget {
             }
         }
     }
+
+
 }

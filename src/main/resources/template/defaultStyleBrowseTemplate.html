@@ -1,3 +1,4 @@
+
 <!--预览视图-->
 <div xmlns:th="http://www.thymeleaf.org">
     <!--/*@thymesVar id="serial" type="java.lang.String"*/-->
@@ -6,7 +7,7 @@
     <div class="newsFlash-pane newsFlash-pane-head-pane-red">
         <p><span class="newsFlash-pane-head">快讯News</span><a href="#" class="pull-right">查看更多>></a></p>
         <ul class="list-unstyled newsFlash-pane-list">
-            <li th:each="content:${@cmsDataSourceService.findArticleContent(serial,count)}">
+            <li th:each="content:${@cmsDataSourceService.findArticleContent(serial,1,count)}">
                 <a class="clearfix" href="defaultStyleBrowseTemplate.html" th:href="@{/{path}/{id}(path=${pagePath},id=${content.id})}">
                     <span class="newsFlash-list-title" th:text="${content.title}">name</span>
                     <span class="newsFlash-list-time" th:text="${content.createTime}"></span>
