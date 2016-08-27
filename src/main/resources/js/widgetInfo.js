@@ -8,7 +8,6 @@ CMSWidgets.initWidget({
         saveComponent: function (onSuccess, onFailed) {
             this.properties.serial = $("select").val();
             this.properties.count = $(".count").val();
-            this.properties.pageSerial = '123';
             onSuccess(this.properties);
             return this.properties;
         },
