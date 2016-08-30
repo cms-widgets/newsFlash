@@ -10,7 +10,7 @@
             <li th:each="article:${dataPage}">
                 <a class="clearfix"  th:href="@{/${contentURI}/{id}(id=${article.id})}">
                     <span class="newsFlash-list-title" th:text="${article.title}">name</span>
-                    <span class="newsFlash-list-time" th:text="${article.createTime}"></span>
+                    <span class="newsFlash-list-time" th:text="${{article.createTime}}"></span>
                 </a>
             </li>
         </ul>

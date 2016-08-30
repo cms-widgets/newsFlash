@@ -153,7 +153,7 @@ public class WidgetInfo implements Widget, PreProcessWidget {
                     PageInfo contentPage = CMSContext.RequestContext().getWebApplicationContext().getBean(PageService.class)
                             .getClosestContentPage(category, (String) variables.get("uri"));
                     variables.put("contentURI", contentPage.getPagePath());
-                } catch (PageNotFoundException e) {
+                } catch (Exception e) {
                     variables.put("contentURI", variables.get("uri"));
                 }
             }
