@@ -115,19 +115,16 @@ public class WidgetInfo implements Widget, PreProcessWidget {
 
 
     @Override
-    public ComponentProperties defaultProperties(ResourceService resourceService) throws IOException,IllegalStateException {
+    public ComponentProperties defaultProperties(ResourceService resourceService) throws IOException, IllegalStateException {
         ComponentProperties properties = new ComponentProperties();
         // 随意找一个数据源,如果没有。那就没有。。
         CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CMSDataSourceService.class);
 
         List<Category> categories = cmsDataSourceService.findArticleCategory();
-        if (categories.isEmpty()) {
-            properties.put(SERIAL, "");
-//            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
-        }else {
-            properties.put(SERIAL, categories.get(0).getSerial());
-        }
+        if (categories.isEmpty())
+            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
+        properties.put(SERIAL, categories.get(0).getSerial());
         properties.put(COUNT, NEWS_FLASH_LIST_SIZE);
         return properties;
     }
@@ -139,8 +136,8 @@ public class WidgetInfo implements Widget, PreProcessWidget {
         String serial = (String) properties.get(SERIAL);
         CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CMSDataSourceService.class);
-        Page<Article> page = cmsDataSourceService.findArticleContent(serial,1,NEWS_FLASH_LIST_SIZE);
-        variables.put(DATA_PAGE,page);
+        Page<Article> page = cmsDataSourceService.findArticleContent(serial, 1, NEWS_FLASH_LIST_SIZE);
+        variables.put(DATA_PAGE, page);
         String contentSerial = (String) properties.get(ContentSerial);
         if (page != null && !page.getContent().isEmpty()) {
             if (contentSerial != null) {
@@ -148,10 +145,10 @@ public class WidgetInfo implements Widget, PreProcessWidget {
                 variables.put("contentURI", contentPage.getPagePath());
             } else {
                 try {
-                    CategoryRepository categoryRepository =  CMSContext.RequestContext().getWebApplicationContext()
+                    CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
                             .getBean(CategoryRepository.class);
                     Category category = categoryRepository.findBySerialAndSite(variables.get(SERIAL).toString()
-                            ,CMSContext.RequestContext().getSite());
+                            , CMSContext.RequestContext().getSite());
                     PageInfo contentPage = CMSContext.RequestContext().getWebApplicationContext().getBean(PageService.class)
                             .getClosestContentPage(category, (String) variables.get("uri"));
                     variables.put("contentURI", contentPage.getPagePath());
