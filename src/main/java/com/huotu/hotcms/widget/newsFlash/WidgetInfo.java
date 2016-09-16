@@ -9,9 +9,11 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
+import com.huotu.hotcms.service.common.ContentType;
+import com.huotu.hotcms.service.common.PageType;
 import com.huotu.hotcms.service.entity.Article;
 import com.huotu.hotcms.service.entity.Category;
-import com.huotu.hotcms.service.exception.PageNotFoundException;
+import com.huotu.hotcms.service.repository.ArticleRepository;
 import com.huotu.hotcms.service.repository.CategoryRepository;
 import com.huotu.hotcms.widget.CMSContext;
 import com.huotu.hotcms.widget.ComponentProperties;
@@ -29,10 +31,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -122,9 +126,30 @@ public class WidgetInfo implements Widget, PreProcessWidget {
                 .getBean(CMSDataSourceService.class);
 
         List<Category> categories = cmsDataSourceService.findArticleCategory();
-        if (categories.isEmpty())
-            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
-        properties.put(SERIAL, categories.get(0).getSerial());
+        if (categories.isEmpty()) {
+            CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
+                    .getBean(CategoryRepository.class);
+            ArticleRepository articleRepository = CMSContext.RequestContext().getWebApplicationContext()
+                    .getBean(ArticleRepository.class);
+            Category category = new Category();
+            category.setContentType(ContentType.Article);
+            category.setName("资讯数据源");
+            category.setSerial(UUID.randomUUID().toString());
+            category.setSite(CMSContext.RequestContext().getSite());
+            categoryRepository.save(category);
+            properties.put(SERIAL, category.getSerial());
+            Article article = new Article();
+            article.setDeleted(false);
+            article.setTitle("文章标题");
+            article.setCategory(category);
+            article.setContent("文章内容");
+            article.setCreateTime(LocalDateTime.now());
+            article.setSerial(UUID.randomUUID().toString());
+            articleRepository.save(article);
+//            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
+        } else {
+            properties.put(SERIAL, categories.get(0).getSerial());
+        }
         properties.put(COUNT, NEWS_FLASH_LIST_SIZE);
         return properties;
     }
@@ -159,5 +184,8 @@ public class WidgetInfo implements Widget, PreProcessWidget {
         }
     }
 
-
+    @Override
+    public PageType supportedPageType() {
+        return PageType.Ordinary;
+    }
 }
