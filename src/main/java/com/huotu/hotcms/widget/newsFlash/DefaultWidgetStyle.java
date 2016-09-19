@@ -9,13 +9,10 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import java.util.Locale;
-import com.huotu.hotcms.widget.Widget;
 import com.huotu.hotcms.widget.WidgetStyle;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
 import java.util.Locale;
 
 /**
@@ -30,16 +27,16 @@ public class DefaultWidgetStyle implements WidgetStyle{
 
     @Override
     public String name(Locale locale) {
-        if (locale.equals(Locale.CHINESE)) {
-            return "bootstrap 风格";
+        if (locale.equals(Locale.CHINA)) {
+            return "默认样式";
         }
-        return "bootstrap style newsFlash";
+        return "default style";
     }
 
     @Override
     public String description(Locale locale) {
-        if (locale.equals(Locale.CHINESE)) {
-            return "基于bootstrap样式的   ";
+        if (locale.equals(Locale.CHINA)) {
+            return "基于bootstrap样式的 默认样式";
         }
         return "Based on the bootstrap style by newsFlash";
     }
