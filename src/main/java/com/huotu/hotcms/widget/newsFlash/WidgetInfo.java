@@ -15,6 +15,7 @@ import com.huotu.hotcms.service.entity.Article;
 import com.huotu.hotcms.service.entity.Category;
 import com.huotu.hotcms.service.repository.ArticleRepository;
 import com.huotu.hotcms.service.repository.CategoryRepository;
+import com.huotu.hotcms.service.service.CategoryService;
 import com.huotu.hotcms.widget.CMSContext;
 import com.huotu.hotcms.widget.ComponentProperties;
 import com.huotu.hotcms.widget.PreProcessWidget;
@@ -51,9 +52,10 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     public static final String DATA_PAGE = "dataPage";
 
     public static final int NEWS_FLASH_LIST_SIZE = 10;
-
     @Autowired
     CMSDataSourceService cmsDataSourceService;
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public String groupId() {
@@ -134,7 +136,7 @@ public class WidgetInfo implements Widget, PreProcessWidget {
             Category category = new Category();
             category.setContentType(ContentType.Article);
             category.setName("资讯数据源");
-            category.setSerial(UUID.randomUUID().toString());
+            categoryService.init(category);
             category.setSite(CMSContext.RequestContext().getSite());
             categoryRepository.save(category);
             properties.put(SERIAL, category.getSerial());

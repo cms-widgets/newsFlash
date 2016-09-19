@@ -8,6 +8,11 @@ CMSWidgets.initWidget({
         saveComponent: function (onSuccess, onFailed) {
             this.properties.serial = $("select").val();
             this.properties.count = $(".count").val();
+            if (this.properties.serial == null || this.properties.serial == '' || this.properties.count == ''
+                || this.properties.count == '0') {
+                onFailed("数据源serial不能为空，且展示条数不能为空");
+                return;
+            }
             onSuccess(this.properties);
             return this.properties;
         },
