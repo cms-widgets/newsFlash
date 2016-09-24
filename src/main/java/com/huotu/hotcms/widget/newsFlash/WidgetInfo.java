@@ -54,8 +54,6 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     public static final int NEWS_FLASH_LIST_SIZE = 10;
     @Autowired
     CMSDataSourceService cmsDataSourceService;
-    @Autowired
-    private CategoryService categoryService;
 
     @Override
     public String groupId() {
@@ -126,6 +124,8 @@ public class WidgetInfo implements Widget, PreProcessWidget {
         // 随意找一个数据源,如果没有。那就没有。。
         CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CMSDataSourceService.class);
+        CategoryService categoryService = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CategoryService.class);
 
         List<Category> categories = cmsDataSourceService.findArticleCategory();
         if (categories.isEmpty()) {
@@ -148,7 +148,6 @@ public class WidgetInfo implements Widget, PreProcessWidget {
             article.setCreateTime(LocalDateTime.now());
             article.setSerial(UUID.randomUUID().toString());
             articleRepository.save(article);
-//            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
         } else {
             properties.put(SERIAL, categories.get(0).getSerial());
         }

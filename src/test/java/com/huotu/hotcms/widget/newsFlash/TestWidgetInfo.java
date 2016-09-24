@@ -9,24 +9,24 @@
 
 package com.huotu.hotcms.widget.newsFlash;
 
+import com.huotu.hotcms.service.common.ContentType;
 import com.huotu.hotcms.service.entity.Article;
 import com.huotu.hotcms.service.entity.Category;
-import com.huotu.hotcms.service.model.BaseModel;
 import com.huotu.hotcms.widget.CMSContext;
 import com.huotu.hotcms.widget.ComponentProperties;
 import com.huotu.hotcms.widget.Widget;
 import com.huotu.hotcms.widget.WidgetStyle;
 import com.huotu.hotcms.widget.service.CMSDataSourceService;
+import com.huotu.widget.test.Editor;
 import com.huotu.widget.test.WidgetTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
 import org.springframework.data.domain.Page;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -44,15 +44,19 @@ public class TestWidgetInfo extends WidgetTest {
     }
 
     @Override
-    protected void editorWork(Widget widget, WebElement editor, Supplier<Map<String, Object>> currentWidgetProperties) throws IOException {
-        WebElement count = editor.findElement(By.name("count"));
+    protected void editorWork(Widget widget, Editor editor, Supplier<Map<String, Object>> currentWidgetProperties)
+            throws IOException {
+        WebElement count = editor.getWebElement().findElement(By.name("count"));
         count.clear();
         Actions actions = new Actions(driver);
         actions.sendKeys(count,"20").build().perform();
+        Category category = new Category();
+        category.setSerial("123444");
+        category.setContentType(ContentType.Article);
+        editor.chooseCategory(WidgetInfo.SERIAL, category);
         Map map = currentWidgetProperties.get();
         assertThat(map.get(WidgetInfo.COUNT)).isEqualTo("20");
-
-
+        assertThat(map.get(WidgetInfo.SERIAL)).isEqualTo("123444");
     }
 
     @Override
@@ -72,20 +76,12 @@ public class TestWidgetInfo extends WidgetTest {
     }
 
     @Override
-    protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function, Supplier<Map<String, Object>> supplier) throws IOException {
+    protected void editorBrowseWork(Widget widget, Function<ComponentProperties, WebElement> function
+            , Supplier<Map<String, Object>> supplier) throws IOException {
         ComponentProperties properties = widget.defaultProperties(resourceService);
         WebElement webElement = function.apply(properties);
         WebElement count = webElement.findElement(By.name(WidgetInfo.COUNT));
         assertThat(count.getAttribute("value")).isEqualTo(properties.get(WidgetInfo.COUNT).toString());
-
-        List<WebElement> options = webElement.findElements(By.tagName("option"));
-        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
-                .getBean(CMSDataSourceService.class);
-        List<Category> list = cmsDataSourceService.findArticleCategory();
-        if (list==null)
-            assertThat(options).isNull();
-        else
-            assertThat(options.size()).isEqualTo(options.size());
     }
 
 }
