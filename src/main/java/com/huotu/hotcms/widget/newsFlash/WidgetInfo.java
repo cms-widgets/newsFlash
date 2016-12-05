@@ -44,6 +44,7 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     public static final String DATA_PAGE = "dataPage";
 
     public static final int NEWS_FLASH_LIST_SIZE = 10;
+    private static final String CATEGORY = "category";
     @Autowired
     CMSDataSourceService cmsDataSourceService;
 
@@ -114,15 +115,13 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     public ComponentProperties defaultProperties(ResourceService resourceService) throws IOException, IllegalStateException {
         ComponentProperties properties = new ComponentProperties();
         // 随意找一个数据源,如果没有。那就没有。。
-        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
-                .getBean(CMSDataSourceService.class);
+        CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CategoryRepository.class);
         CategoryService categoryService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CategoryService.class);
-
-        List<Category> categories = cmsDataSourceService.findArticleCategory();
+        List<Category> categories = categoryRepository
+                .findBySiteAndContentTypeAndDeletedFalse(CMSContext.RequestContext().getSite(), ContentType.Article);
         if (categories.isEmpty()) {
-            CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
-                    .getBean(CategoryRepository.class);
             ArticleRepository articleRepository = CMSContext.RequestContext().getWebApplicationContext()
                     .getBean(ArticleRepository.class);
             Category category = new Category();
@@ -154,8 +153,11 @@ public class WidgetInfo implements Widget, PreProcessWidget {
         String serial = (String) properties.get(SERIAL);
         CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CMSDataSourceService.class);
+        CategoryRepository categoryRepository = getCMSServiceFromCMSContext(CategoryRepository.class);
+        Category category = categoryRepository.findBySerialAndSite(serial, CMSContext.RequestContext().getSite());
         Page<Article> page = cmsDataSourceService.findArticleContent(serial, 1, NEWS_FLASH_LIST_SIZE);
         variables.put(DATA_PAGE, page);
+        variables.put(CATEGORY, category);
         String contentSerial = (String) properties.get(ContentSerial);
         if (page != null && !page.getContent().isEmpty()) {
             if (contentSerial != null) {
@@ -163,12 +165,8 @@ public class WidgetInfo implements Widget, PreProcessWidget {
                 variables.put("contentURI", contentPage.getPagePath());
             } else {
                 try {
-                    CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
-                            .getBean(CategoryRepository.class);
-                    Category category = categoryRepository.findBySerialAndSite(variables.get(SERIAL).toString()
-                            , CMSContext.RequestContext().getSite());
                     PageInfo contentPage = CMSContext.RequestContext().getWebApplicationContext().getBean(PageService.class)
-                            .getClosestContentPage(category, (String) variables.get("uri"));
+                            .getClosestContentPage(category, null, PageType.DataContent);
                     variables.put("contentURI", contentPage.getPagePath());
                 } catch (Exception e) {
                     variables.put("contentURI", variables.get("uri"));
@@ -179,6 +177,6 @@ public class WidgetInfo implements Widget, PreProcessWidget {
 
     @Override
     public PageType supportedPageType() {
-        return PageType.Ordinary;
+        return PageType.DataIndex;
     }
 }
