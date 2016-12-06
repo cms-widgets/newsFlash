@@ -36,9 +36,10 @@ public class DefaultWidgetStyle implements WidgetStyle{
     @Override
     public String description(Locale locale) {
         if (locale.equals(Locale.CHINA)) {
-            return "基于bootstrap样式的 默认样式";
+            return "简单的文章列表样式，展示文章数据源对应的文章内容列表，单击文章跳转至*页面类型为对应数据源的内容页面*";
         }
-        return "Based on the bootstrap style by newsFlash";
+        return "Simple article list style, showing the article data source corresponding to the article content list," +
+                " click the article to jump to the page type for the corresponding data source page";
     }
 
     @Override

@@ -69,9 +69,10 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     @Override
     public String description(Locale locale) {
         if (locale.equals(Locale.CHINA)) {
-            return "这是一个 快讯组件，你可以对组件进行自定义修改。";
+            return "这是一个文章内容列表组件，选择文章数据源进行展示文章内容列表";
         }
-        return "This is a newsFlash,  you can make custom change the component.";
+        return "This is a list of the contents of the article components," +
+                " select the article data source to display the contents of the article list";
     }
 
     @Override
