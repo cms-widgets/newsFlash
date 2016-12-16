@@ -15,11 +15,8 @@ import com.huotu.hotcms.service.entity.Article;
 import com.huotu.hotcms.service.entity.Category;
 import com.huotu.hotcms.service.repository.ArticleRepository;
 import com.huotu.hotcms.service.repository.CategoryRepository;
-import com.huotu.hotcms.widget.CMSContext;
-import com.huotu.hotcms.widget.ComponentProperties;
-import com.huotu.hotcms.widget.PreProcessWidget;
-import com.huotu.hotcms.widget.Widget;
-import com.huotu.hotcms.widget.WidgetStyle;
+import com.huotu.hotcms.service.service.CategoryService;
+import com.huotu.hotcms.widget.*;
 import com.huotu.hotcms.widget.entity.PageInfo;
 import com.huotu.hotcms.widget.service.CMSDataSourceService;
 import com.huotu.hotcms.widget.service.PageService;
@@ -32,11 +29,7 @@ import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -51,7 +44,7 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     public static final String DATA_PAGE = "dataPage";
 
     public static final int NEWS_FLASH_LIST_SIZE = 10;
-
+    private static final String CATEGORY = "category";
     @Autowired
     CMSDataSourceService cmsDataSourceService;
 
@@ -76,14 +69,15 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     @Override
     public String description(Locale locale) {
         if (locale.equals(Locale.CHINA)) {
-            return "这是一个 快讯组件，你可以对组件进行自定义修改。";
+            return "这是一个文章内容列表组件，选择文章数据源进行展示文章内容列表";
         }
-        return "This is a newsFlash,  you can make custom change the component.";
+        return "This is a list of the contents of the article components," +
+                " select the article data source to display the contents of the article list";
     }
 
     @Override
     public String dependVersion() {
-        return "1.0-SNAPSHOT";
+        return "1.1.0";
     }
 
     @Override
@@ -122,19 +116,19 @@ public class WidgetInfo implements Widget, PreProcessWidget {
     public ComponentProperties defaultProperties(ResourceService resourceService) throws IOException, IllegalStateException {
         ComponentProperties properties = new ComponentProperties();
         // 随意找一个数据源,如果没有。那就没有。。
-        CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
-                .getBean(CMSDataSourceService.class);
-
-        List<Category> categories = cmsDataSourceService.findArticleCategory();
+        CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CategoryRepository.class);
+        CategoryService categoryService = CMSContext.RequestContext().getWebApplicationContext()
+                .getBean(CategoryService.class);
+        List<Category> categories = categoryRepository
+                .findBySiteAndContentTypeAndDeletedFalse(CMSContext.RequestContext().getSite(), ContentType.Article);
         if (categories.isEmpty()) {
-            CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
-                    .getBean(CategoryRepository.class);
             ArticleRepository articleRepository = CMSContext.RequestContext().getWebApplicationContext()
                     .getBean(ArticleRepository.class);
             Category category = new Category();
             category.setContentType(ContentType.Article);
             category.setName("资讯数据源");
-            category.setSerial(UUID.randomUUID().toString());
+            categoryService.init(category);
             category.setSite(CMSContext.RequestContext().getSite());
             categoryRepository.save(category);
             properties.put(SERIAL, category.getSerial());
@@ -146,7 +140,6 @@ public class WidgetInfo implements Widget, PreProcessWidget {
             article.setCreateTime(LocalDateTime.now());
             article.setSerial(UUID.randomUUID().toString());
             articleRepository.save(article);
-//            throw new IllegalStateException("请至少添加一个数据源再使用这个控件。");
         } else {
             properties.put(SERIAL, categories.get(0).getSerial());
         }
@@ -161,8 +154,11 @@ public class WidgetInfo implements Widget, PreProcessWidget {
         String serial = (String) properties.get(SERIAL);
         CMSDataSourceService cmsDataSourceService = CMSContext.RequestContext().getWebApplicationContext()
                 .getBean(CMSDataSourceService.class);
+        CategoryRepository categoryRepository = getCMSServiceFromCMSContext(CategoryRepository.class);
+        Category category = categoryRepository.findBySerialAndSite(serial, CMSContext.RequestContext().getSite());
         Page<Article> page = cmsDataSourceService.findArticleContent(serial, 1, NEWS_FLASH_LIST_SIZE);
         variables.put(DATA_PAGE, page);
+        variables.put(CATEGORY, category);
         String contentSerial = (String) properties.get(ContentSerial);
         if (page != null && !page.getContent().isEmpty()) {
             if (contentSerial != null) {
@@ -170,12 +166,8 @@ public class WidgetInfo implements Widget, PreProcessWidget {
                 variables.put("contentURI", contentPage.getPagePath());
             } else {
                 try {
-                    CategoryRepository categoryRepository = CMSContext.RequestContext().getWebApplicationContext()
-                            .getBean(CategoryRepository.class);
-                    Category category = categoryRepository.findBySerialAndSite(variables.get(SERIAL).toString()
-                            , CMSContext.RequestContext().getSite());
                     PageInfo contentPage = CMSContext.RequestContext().getWebApplicationContext().getBean(PageService.class)
-                            .getClosestContentPage(category, (String) variables.get("uri"));
+                            .getClosestContentPage(category, null, PageType.DataContent);
                     variables.put("contentURI", contentPage.getPagePath());
                 } catch (Exception e) {
                     variables.put("contentURI", variables.get("uri"));
@@ -186,6 +178,6 @@ public class WidgetInfo implements Widget, PreProcessWidget {
 
     @Override
     public PageType supportedPageType() {
-        return PageType.Ordinary;
+        return PageType.DataIndex;
     }
 }

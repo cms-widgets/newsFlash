@@ -5,7 +5,7 @@
     <!--/*@thymesVar id="count" type="java.lang.Number"*/-->
     <!--/*@thymesVar id="pagePath" type="java.lang.String"*/-->
     <div class="newsFlash-pane newsFlash-pane-red">
-        <p><span class="newsFlash-pane-head">快讯News</span><a href="#" class="pull-right">查看更多>></a></p>
+        <p><span class="newsFlash-pane-head" th:text="${category!=null? category.name:'快讯News'}">快讯News</span></p>
         <ul class="list-unstyled newsFlash-pane-list">
             <li th:each="article:${dataPage}">
                 <a class="clearfix" th:href="@{/${contentURI}/{contentSerial}(contentSerial=${article.serial})}">
